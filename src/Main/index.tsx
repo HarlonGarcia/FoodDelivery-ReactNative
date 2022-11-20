@@ -25,7 +25,7 @@ export function Main() {
     setSelectedAddress(address);
   }
 
-  function handleCancelOrder() {
+  function handleCleanOrder() {
     setSelectedAddress("");
     setCartItems([]);
   }
@@ -91,7 +91,7 @@ export function Main() {
       <Container>
         <Header
           selectedAddress={selectedAddress}
-          onCancelOrder={handleCancelOrder}
+          onCancelOrder={handleCleanOrder}
         />
         <CategoriesContainer>
           <Categories></Categories>
@@ -110,6 +110,7 @@ export function Main() {
               cartItems={cartItems}
               onAdd={addToCart}
               onDecrement={handleDecrementItem}
+              onConfirmOrder={handleCleanOrder}
             ></Cart>
           )}
         </FooterContainer>
