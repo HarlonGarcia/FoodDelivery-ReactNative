@@ -5,7 +5,7 @@ import { Product } from "../../types/Product";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { MinusCircle } from "../Icons/MinusCircle";
 import { PlusCircle } from "../Icons/PlusCircle";
-import { OrderConfirmedModal } from "../OrderCofirmedModal";
+import { OrderPlacedModal } from "../OrderPlacedModal";
 import { Button } from "../Shared/Button";
 import { Text } from "../Text";
 import {
@@ -32,6 +32,7 @@ export function Cart({
   onDecrement,
   onConfirmOrder,
 }: CartProps) {
+  const [isLoading, setIsLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const total = cartItems.reduce((acc, { quantity, product }) => {
@@ -49,7 +50,7 @@ export function Cart({
 
   return (
     <>
-      <OrderConfirmedModal visible={isModalVisible} onOk={handleOk} />
+      <OrderPlacedModal visible={isModalVisible} onOk={handleOk} />
       {cartItems.length > 0 ? (
         <FlatList
           data={cartItems}
@@ -109,7 +110,11 @@ export function Cart({
             <Text color="#999">Seu carrinho está vazio</Text>
           ) : null}
         </TotalContainer>
-        <Button onPress={handleConfirmOrder} disabled={cartItems.length <= 0}>
+        <Button
+          onPress={handleConfirmOrder}
+          disabled={cartItems.length <= 0}
+          loading={isLoading}
+        >
           Confimar pedido
         </Button>
       </Summary>

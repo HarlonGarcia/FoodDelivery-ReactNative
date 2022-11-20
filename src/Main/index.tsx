@@ -1,15 +1,20 @@
 import { useState } from "react";
+import { ActivityIndicator } from "react-native";
+
 import { Cart } from "../components/Cart";
 import { Categories } from "../components/Categories";
 import { Header } from "../components/Header";
+import { Empty } from "../components/Icons/Empty";
 import { Menu } from "../components/Menu";
 import { OrderModal } from "../components/OrderModal";
 import { Button } from "../components/Shared/Button";
-import { products } from "../mocks/products";
+import { Text } from "../components/Text";
 import { CartItem } from "../types/CartItem";
 import { Product } from "../types/Product";
+
 import {
   CategoriesContainer,
+  CenteredContainer,
   Container,
   Footer,
   FooterContainer,
@@ -17,9 +22,11 @@ import {
 } from "./styles";
 
 export function Main() {
+  const [isLoading, setIsLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState("");
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
 
   function handleSaveAddress(address: string) {
     setSelectedAddress(address);
@@ -93,17 +100,42 @@ export function Main() {
           selectedAddress={selectedAddress}
           onCancelOrder={handleCleanOrder}
         />
-        <CategoriesContainer>
-          <Categories></Categories>
-        </CategoriesContainer>
-        <MenuContainer>
-          <Menu onAddToCart={handleAddToCart} />
-        </MenuContainer>
+
+        {isLoading ? (
+          <CenteredContainer>
+            <ActivityIndicator color="#FF5700" size="large" />
+          </CenteredContainer>
+        ) : (
+          <>
+            <CategoriesContainer>
+              <Categories></Categories>
+            </CategoriesContainer>
+
+            {products.length > 0 ? (
+              <MenuContainer>
+                <Menu onAddToCart={handleAddToCart} products={products} />
+              </MenuContainer>
+            ) : (
+              <CenteredContainer>
+                <Empty />
+                <Text color="#666" style={{ marginTop: 24 }}>
+                  Nenhum produto foi encontrado {":("}
+                </Text>
+              </CenteredContainer>
+            )}
+          </>
+        )}
       </Container>
+
       <Footer>
         <FooterContainer>
           {!selectedAddress && (
-            <Button onPress={() => setIsModalVisible(true)}>Novo pedido</Button>
+            <Button
+              onPress={() => setIsModalVisible(true)}
+              disabled={isLoading}
+            >
+              Novo pedido
+            </Button>
           )}
           {selectedAddress && (
             <Cart

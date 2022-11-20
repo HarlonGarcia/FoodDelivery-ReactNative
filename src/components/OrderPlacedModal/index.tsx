@@ -3,15 +3,12 @@ import { CheckCircle } from "../Icons/CheckCircle";
 import { Text } from "../Text";
 import { Container, OkButton } from "./styles";
 
-interface OrderConfirmedModalProps {
+interface OrderPlacedModalProps {
   visible: boolean;
   onOk: () => void;
 }
 
-export function OrderConfirmedModal({
-  visible,
-  onOk,
-}: OrderConfirmedModalProps) {
+export function OrderPlacedModal({ visible, onOk }: OrderPlacedModalProps) {
   return (
     <Modal visible={visible} animationType="fade">
       <Container>
