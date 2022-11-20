@@ -20,10 +20,17 @@ export function Main() {
     setSelectedAddress(address);
   }
 
+  function handleCancelOrder() {
+    setSelectedAddress("");
+  }
+
   return (
     <>
       <Container>
-        <Header />
+        <Header
+          selectedAddress={selectedAddress}
+          onCancelOrder={handleCancelOrder}
+        />
         <CategoriesContainer>
           <Categories></Categories>
         </CategoriesContainer>

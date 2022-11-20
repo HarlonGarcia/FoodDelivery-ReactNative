@@ -15,6 +15,7 @@ export function OrderModal({ visible, onClose, onSave }: OrderModalProps) {
   const [address, setAddress] = useState("");
 
   function handleSave() {
+    setAddress("");
     onSave(address);
     onClose();
   }
