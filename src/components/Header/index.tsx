@@ -3,14 +3,14 @@ import { Text } from "../Text";
 import { Container, Content, OrderHeader, OrderPlaced } from "./styles";
 
 interface HeaderProps {
-  selectedAddress: string;
+  user: null | User;
   onCancelOrder: () => void;
 }
 
-export function Header({ selectedAddress, onCancelOrder }: HeaderProps) {
+export function Header({ user, onCancelOrder }: HeaderProps) {
   return (
     <Container>
-      {!selectedAddress && (
+      {!user && (
         <>
           <Text size={14} opacity={0.9}>
             Bem vindo(a) ao
@@ -21,7 +21,7 @@ export function Header({ selectedAddress, onCancelOrder }: HeaderProps) {
           </Text>
         </>
       )}
-      {selectedAddress && (
+      {user && (
         <Content>
           <OrderHeader>
             <Text size={24} weight="700">
@@ -34,7 +34,7 @@ export function Header({ selectedAddress, onCancelOrder }: HeaderProps) {
             </TouchableOpacity>
           </OrderHeader>
           <OrderPlaced>
-            <Text color="#666">{selectedAddress}</Text>
+            <Text color="#666">{user.name}</Text>
           </OrderPlaced>
         </Content>
       )}

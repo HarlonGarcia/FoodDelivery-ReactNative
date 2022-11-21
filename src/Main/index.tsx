@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ActivityIndicator } from "react-native";
+import { api } from "../utils/api";
 
 import { Cart } from "../components/Cart";
 import { Categories } from "../components/Categories";
@@ -20,25 +21,54 @@ import {
   FooterContainer,
   MenuContainer,
 } from "./styles";
+import { Category } from "../types/Category";
+import { Address } from "../types/Address";
 
 export function Main() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedAddress, setSelectedAddress] = useState("");
+  const [user, setUser] = useState<null | User>(null);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(false);
 
-  function handleSaveAddress(address: string) {
-    setSelectedAddress(address);
+  useEffect(() => {
+    Promise.all([api.get("/categories"), api.get("/products")]).then(
+      ([categoriesResponse, productsResponse]) => {
+        setCategories(categoriesResponse.data);
+        setProducts(productsResponse.data);
+        setIsLoading(false);
+      }
+    );
+  }, []);
+
+  async function handleSelectedCategory(categoryId: string) {
+    const route = !categoryId
+      ? "/products"
+      : `/categories/${categoryId}/products`;
+
+    setIsLoadingProducts(true);
+
+    const { data } = await api.get(route);
+    setProducts(data);
+    setIsLoadingProducts(false);
+  }
+
+  function handleSaveAddress(address: Address) {
+    setUser({
+      name: "Harlon",
+      address,
+    });
   }
 
   function handleCleanOrder() {
-    setSelectedAddress("");
+    setUser(null);
     setCartItems([]);
   }
 
   function handleAddToCart(product: Product) {
-    if (!selectedAddress) {
+    if (!user) {
       setIsModalVisible(true);
     }
     addToCart(product);
@@ -96,10 +126,7 @@ export function Main() {
   return (
     <>
       <Container>
-        <Header
-          selectedAddress={selectedAddress}
-          onCancelOrder={handleCleanOrder}
-        />
+        <Header user={user} onCancelOrder={handleCleanOrder} />
 
         {isLoading ? (
           <CenteredContainer>
@@ -108,20 +135,31 @@ export function Main() {
         ) : (
           <>
             <CategoriesContainer>
-              <Categories></Categories>
+              <Categories
+                categories={categories}
+                onSelectCategory={handleSelectedCategory}
+              />
             </CategoriesContainer>
 
-            {products.length > 0 ? (
-              <MenuContainer>
-                <Menu onAddToCart={handleAddToCart} products={products} />
-              </MenuContainer>
-            ) : (
+            {isLoadingProducts ? (
               <CenteredContainer>
-                <Empty />
-                <Text color="#666" style={{ marginTop: 24 }}>
-                  Nenhum produto foi encontrado {":("}
-                </Text>
+                <ActivityIndicator color="#FF5700" size="large" />
               </CenteredContainer>
+            ) : (
+              <>
+                {products.length > 0 ? (
+                  <MenuContainer>
+                    <Menu onAddToCart={handleAddToCart} products={products} />
+                  </MenuContainer>
+                ) : (
+                  <CenteredContainer>
+                    <Empty />
+                    <Text color="#666" style={{ marginTop: 24 }}>
+                      Nenhum produto foi encontrado {":("}
+                    </Text>
+                  </CenteredContainer>
+                )}
+              </>
             )}
           </>
         )}
@@ -129,7 +167,7 @@ export function Main() {
 
       <Footer>
         <FooterContainer>
-          {!selectedAddress && (
+          {!user && (
             <Button
               onPress={() => setIsModalVisible(true)}
               disabled={isLoading}
@@ -137,12 +175,13 @@ export function Main() {
               Novo pedido
             </Button>
           )}
-          {selectedAddress && (
+          {user && (
             <Cart
               cartItems={cartItems}
               onAdd={addToCart}
               onDecrement={handleDecrementItem}
               onConfirmOrder={handleCleanOrder}
+              user={user}
             ></Cart>
           )}
         </FooterContainer>

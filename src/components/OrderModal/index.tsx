@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Modal, Platform, TouchableOpacity } from "react-native";
+import { Address } from "../../types/Address";
 import { Close } from "../Icons/Close";
 import { Button } from "../Shared/Button";
 import { Text } from "../Text";
@@ -8,15 +9,19 @@ import { Overlay, ModalBody, Header, Form, Input } from "./styles";
 interface OrderModalProps {
   visible: boolean;
   onClose: () => void;
-  onSave: (address: string) => void;
+  onSave: (address: Address) => void;
 }
 
 export function OrderModal({ visible, onClose, onSave }: OrderModalProps) {
-  const [address, setAddress] = useState("");
+  const [street, setStreet] = useState("");
+  const [number, setNumber] = useState("");
+  const [reference, setReference] = useState("");
 
   function handleSave() {
-    setAddress("");
-    onSave(address);
+    setStreet("");
+    setNumber("");
+    setReference("");
+    onSave({ street, number, reference });
     onClose();
   }
 
@@ -25,7 +30,7 @@ export function OrderModal({ visible, onClose, onSave }: OrderModalProps) {
       <Overlay behavior={Platform.OS === "android" ? "height" : "padding"}>
         <ModalBody>
           <Header>
-            <Text weight="700">Seu pedido</Text>
+            <Text weight="700">Informe o endereço de entrega</Text>
 
             <TouchableOpacity onPress={onClose}>
               <Close color="#666" />
@@ -33,12 +38,26 @@ export function OrderModal({ visible, onClose, onSave }: OrderModalProps) {
           </Header>
           <Form>
             <Input
-              placeholder="Informe o endereço de entrega"
+              placeholder="Rua"
               placeholderTextColor="#666"
-              onChangeText={setAddress}
+              onChangeText={setStreet}
+            />
+            <Input
+              placeholder="Número"
+              placeholderTextColor="#666"
+              onChangeText={setNumber}
+            />
+            <Input
+              placeholder="Referência"
+              placeholderTextColor="#666"
+              onChangeText={setReference}
+              style={{ marginBottom: 24 }}
             />
 
-            <Button onPress={handleSave} disabled={address.length === 0}>
+            <Button
+              onPress={handleSave}
+              disabled={street.length === 0 && street.length === 0}
+            >
               Salvar
             </Button>
           </Form>
