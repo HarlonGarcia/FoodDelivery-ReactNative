@@ -59,33 +59,30 @@ export function Main() {
   }
 
   function handleSaveAddress(address: Address) {
+    const { name, token, phone, _id, orders } = user!;
+
     setUser({
-      name: "Harlon",
+      name,
       address,
-      token: "n_sei_porra",
-      phone: "83998282880",
-      _id: "tambem_yo_no_sey",
-      orders: [{ _id: "" }],
+      token,
+      phone,
+      _id,
+      orders,
     });
   }
 
   function handleUserLogged(user: User) {
     setUser(user);
-  }
-
-  function handleOrdering() {
-    if (user) {
-      user.token ? setIsUserLogged(true) : null;
-    }
+    setIsUserLogged(true);
   }
 
   function handleCleanOrder() {
-    setUser(null);
+    // setUser(null);
     setCartItems([]);
   }
 
   function handleAddToCart(product: Product) {
-    if (user?.token) {
+    if (user && !user.address) {
       setIsOrderModalVisible(true);
     }
     addToCart(product);

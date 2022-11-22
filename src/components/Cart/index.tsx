@@ -53,7 +53,13 @@ export function Cart({
       })),
     };
 
-    await api.post("/orders", payload);
+    const headers = {
+      "x-access-token": user.token,
+    };
+
+    await api.post("/orders", payload, {
+      headers,
+    });
 
     setIsLoading(false);
     setIsModalVisible(true);

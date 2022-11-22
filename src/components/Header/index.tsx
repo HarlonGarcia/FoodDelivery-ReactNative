@@ -16,10 +16,18 @@ interface HeaderProps {
 }
 
 export function Header({ user, onCancelOrder, onLoginClick }: HeaderProps) {
+  const isCartEmpty = (user?.orders.length || 0) == 0;
+
+  // number.toString().replace(/(\d{2})(\d{1})(\d{4})(\d{4})/, "($1) $2 $3-$4")
+
+  // Botão de deslogar
+
+  // Opção de registrar caso não tenha login
+
   return (
     <Container>
       <InitalHeader>
-        {!user?.address ? (
+        {isCartEmpty ? (
           <Content>
             <Text size={14} opacity={0.9}>
               Bem vindo(a) ao
@@ -39,7 +47,7 @@ export function Header({ user, onCancelOrder, onLoginClick }: HeaderProps) {
         ) : null}
       </InitalHeader>
 
-      {user?.address ? (
+      {user && user.orders.length > 0 ? (
         <Content>
           <OrderHeader>
             <Text size={24} weight="700">
