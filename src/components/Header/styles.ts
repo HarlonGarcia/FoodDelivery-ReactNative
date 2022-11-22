@@ -4,6 +4,12 @@ export const Container = styled.View`
   margin: 24px 24px 0;
 `;
 
+export const InitalHeader = styled.View`
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+`;
+
 export const Content = styled.View``;
 
 export const OrderHeader = styled.View`
@@ -18,4 +24,10 @@ export const OrderPlaced = styled.View`
   border-radius: 8px;
   padding: 16px;
   margin-top: 24px;
+`;
+
+export const LoginButton = styled.TouchableOpacity`
+  background-color: #ff5700;
+  padding: 12px 16px;
+  border-radius: 8px;
 `;

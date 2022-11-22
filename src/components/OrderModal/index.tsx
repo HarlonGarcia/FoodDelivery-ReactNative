@@ -56,7 +56,7 @@ export function OrderModal({ visible, onClose, onSave }: OrderModalProps) {
 
             <Button
               onPress={handleSave}
-              disabled={street.length === 0 && street.length === 0}
+              disabled={street.length === 0 || number.length === 0}
             >
               Salvar
             </Button>

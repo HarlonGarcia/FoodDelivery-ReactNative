@@ -23,15 +23,18 @@ import {
 } from "./styles";
 import { Category } from "../types/Category";
 import { Address } from "../types/Address";
+import { LoginModal } from "../components/LoginModal";
 
 export function Main() {
   const [isLoading, setIsLoading] = useState(true);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isOrderModalVisible, setIsOrderModalVisible] = useState(false);
+  const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
   const [user, setUser] = useState<null | User>(null);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
+  const [isUserLogged, setIsUserLogged] = useState(false);
 
   useEffect(() => {
     Promise.all([api.get("/categories"), api.get("/products")]).then(
@@ -59,7 +62,21 @@ export function Main() {
     setUser({
       name: "Harlon",
       address,
+      token: "n_sei_porra",
+      phone: "83998282880",
+      _id: "tambem_yo_no_sey",
+      orders: [{ _id: "" }],
     });
+  }
+
+  function handleUserLogged(user: User) {
+    setUser(user);
+  }
+
+  function handleOrdering() {
+    if (user) {
+      user.token ? setIsUserLogged(true) : null;
+    }
   }
 
   function handleCleanOrder() {
@@ -68,8 +85,8 @@ export function Main() {
   }
 
   function handleAddToCart(product: Product) {
-    if (!user) {
-      setIsModalVisible(true);
+    if (user?.token) {
+      setIsOrderModalVisible(true);
     }
     addToCart(product);
   }
@@ -125,8 +142,17 @@ export function Main() {
 
   return (
     <>
+      <LoginModal
+        visible={isLoginModalVisible}
+        onClose={() => setIsLoginModalVisible(false)}
+        onSubmit={handleUserLogged}
+      />
       <Container>
-        <Header user={user} onCancelOrder={handleCleanOrder} />
+        <Header
+          user={user}
+          onCancelOrder={handleCleanOrder}
+          onLoginClick={() => setIsLoginModalVisible(true)}
+        />
 
         {isLoading ? (
           <CenteredContainer>
@@ -149,7 +175,11 @@ export function Main() {
               <>
                 {products.length > 0 ? (
                   <MenuContainer>
-                    <Menu onAddToCart={handleAddToCart} products={products} />
+                    <Menu
+                      onAddToCart={handleAddToCart}
+                      products={products}
+                      isUserLogged={isUserLogged}
+                    />
                   </MenuContainer>
                 ) : (
                   <CenteredContainer>
@@ -169,10 +199,10 @@ export function Main() {
         <FooterContainer>
           {!user && (
             <Button
-              onPress={() => setIsModalVisible(true)}
-              disabled={isLoading}
+              onPress={() => setIsOrderModalVisible(true)}
+              disabled={isLoading || !isUserLogged}
             >
-              Novo pedido
+              {isUserLogged ? "Novo pedido" : "Faça login para continuar"}
             </Button>
           )}
           {user && (
@@ -188,8 +218,8 @@ export function Main() {
       </Footer>
 
       <OrderModal
-        visible={isModalVisible}
-        onClose={() => setIsModalVisible(false)}
+        visible={isOrderModalVisible}
+        onClose={() => setIsOrderModalVisible(false)}
         onSave={handleSaveAddress}
       />
     </>

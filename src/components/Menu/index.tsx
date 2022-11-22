@@ -16,9 +16,10 @@ import {
 interface MenuProps {
   onAddToCart: (product: Product) => void;
   products: Product[];
+  isUserLogged: boolean;
 }
 
-export function Menu({ onAddToCart, products }: MenuProps) {
+export function Menu({ onAddToCart, products, isUserLogged }: MenuProps) {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<null | Product>(null);
 
@@ -59,9 +60,11 @@ export function Menu({ onAddToCart, products }: MenuProps) {
                 </Text>
               </ProductDetails>
 
-              <AddButton onPress={() => onAddToCart(product)}>
-                <PlusCircle />
-              </AddButton>
+              {isUserLogged ? (
+                <AddButton onPress={() => onAddToCart(product)}>
+                  <PlusCircle />
+                </AddButton>
+              ) : null}
             </ProductContainer>
           );
         }}
