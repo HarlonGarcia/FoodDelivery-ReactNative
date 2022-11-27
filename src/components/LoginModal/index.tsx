@@ -10,9 +10,15 @@ interface LoginModalProps {
   visible: boolean;
   onClose: () => void;
   onSubmit: (user: User) => void;
+  onSignUp: () => void;
 }
 
-export function LoginModal({ visible, onClose, onSubmit }: LoginModalProps) {
+export function LoginModal({
+  visible,
+  onClose,
+  onSubmit,
+  onSignUp,
+}: LoginModalProps) {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
@@ -40,12 +46,17 @@ export function LoginModal({ visible, onClose, onSubmit }: LoginModalProps) {
     onClose();
   }
 
+  function handleNoLoggin() {
+    onSignUp();
+    handleClose();
+  }
+
   return (
     <Modal visible={visible} transparent animationType="fade">
       <Overlay behavior={Platform.OS === "android" ? "height" : "padding"}>
         <ModalBody>
           <ModalHeader>
-            <Text>Cadastro</Text>
+            <Text weight="700">Login</Text>
             <TouchableOpacity onPress={handleClose}>
               <Close color="#333" />
             </TouchableOpacity>
@@ -53,7 +64,7 @@ export function LoginModal({ visible, onClose, onSubmit }: LoginModalProps) {
 
           <ModalContent>
             <Input
-              placeholder="Seu telefone  -  Ex: (83) 90123-4567"
+              placeholder="Seu telefone"
               placeholderTextColor="#666"
               onChangeText={(value) => {
                 setError(false);
@@ -80,6 +91,17 @@ export function LoginModal({ visible, onClose, onSubmit }: LoginModalProps) {
             >
               Entrar
             </Button>
+            <TouchableOpacity
+              onPress={handleNoLoggin}
+              style={{ alignSelf: "center", marginTop: 16 }}
+            >
+              <Text size={14} color="#333">
+                Ainda não tem uma conta?{" "}
+                <Text size={14} color="#FF5700" weight="700">
+                  Clique aqui!
+                </Text>
+              </Text>
+            </TouchableOpacity>
           </ModalContent>
         </ModalBody>
       </Overlay>

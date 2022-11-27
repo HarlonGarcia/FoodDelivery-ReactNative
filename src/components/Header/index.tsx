@@ -1,28 +1,15 @@
 import { TouchableOpacity } from "react-native";
 import { Text } from "../Text";
-import {
-  Container,
-  Content,
-  InitalHeader,
-  LoginButton,
-  OrderHeader,
-  OrderPlaced,
-} from "./styles";
+import { Container, Content, InitalHeader, LoginButton } from "./styles";
 
 interface HeaderProps {
   user: null | User;
-  onCancelOrder: () => void;
+  onLogout: () => void;
   onLoginClick: () => void;
 }
 
-export function Header({ user, onCancelOrder, onLoginClick }: HeaderProps) {
-  const isCartEmpty = (user?.orders.length || 0) == 0;
-
-  // number.toString().replace(/(\d{2})(\d{1})(\d{4})(\d{4})/, "($1) $2 $3-$4")
-
-  // Botão de deslogar
-
-  // Opção de registrar caso não tenha login
+export function Header({ user, onLogout, onLoginClick }: HeaderProps) {
+  const isCartEmpty = (user?.orders?.length || 0) == 0;
 
   return (
     <Container>
@@ -30,7 +17,7 @@ export function Header({ user, onCancelOrder, onLoginClick }: HeaderProps) {
         {isCartEmpty ? (
           <Content>
             <Text size={14} opacity={0.9}>
-              Bem vindo(a) ao
+              Bem vindo(a) {user ? <Text weight="700">{user.name}</Text> : "ao"}
             </Text>
             <Text size={24} weight="900">
               Food
@@ -45,25 +32,14 @@ export function Header({ user, onCancelOrder, onLoginClick }: HeaderProps) {
             </Text>
           </LoginButton>
         ) : null}
-      </InitalHeader>
-
-      {user && user.orders.length > 0 ? (
-        <Content>
-          <OrderHeader>
-            <Text size={24} weight="700">
-              Pedido
+        {user ? (
+          <TouchableOpacity onPress={onLogout}>
+            <Text color="#FF5700" weight="700" size={18}>
+              Deslogar
             </Text>
-            <TouchableOpacity onPress={onCancelOrder}>
-              <Text size={14} weight="700" color="#E20000">
-                Cancelar pedido
-              </Text>
-            </TouchableOpacity>
-          </OrderHeader>
-          <OrderPlaced>
-            <Text color="#666">{user.name}</Text>
-          </OrderPlaced>
-        </Content>
-      ) : null}
+          </TouchableOpacity>
+        ) : null}
+      </InitalHeader>
     </Container>
   );
 }

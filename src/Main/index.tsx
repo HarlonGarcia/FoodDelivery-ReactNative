@@ -24,11 +24,13 @@ import {
 import { Category } from "../types/Category";
 import { Address } from "../types/Address";
 import { LoginModal } from "../components/LoginModal";
+import { SignUpModal } from "../components/SignUpModal";
 
 export function Main() {
   const [isLoading, setIsLoading] = useState(true);
   const [isOrderModalVisible, setIsOrderModalVisible] = useState(false);
   const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
+  const [isSignUpModalVisible, setIsSignUpModalVisible] = useState(false);
   const [user, setUser] = useState<null | User>(null);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -59,16 +61,22 @@ export function Main() {
   }
 
   function handleSaveAddress(address: Address) {
-    const { name, token, phone, _id, orders } = user!;
+    const { name, phone, password, orders } = user!;
 
-    setUser({
+    const payload = {
       name,
-      address,
-      token,
       phone,
-      _id,
+      password,
+      address,
       orders,
-    });
+    };
+
+    api
+      .post("/register", payload)
+      .then(({ data }) => {
+        setUser(data);
+      })
+      .catch((error) => console.log(error));
   }
 
   function handleUserLogged(user: User) {
@@ -76,13 +84,14 @@ export function Main() {
     setIsUserLogged(true);
   }
 
-  function handleCleanOrder() {
-    // setUser(null);
+  function handleLogout() {
+    setUser(null);
+    setIsUserLogged(false);
     setCartItems([]);
   }
 
   function handleAddToCart(product: Product) {
-    if (user && !user.address) {
+    if (user && !user?.address.street) {
       setIsOrderModalVisible(true);
     }
     addToCart(product);
@@ -143,11 +152,17 @@ export function Main() {
         visible={isLoginModalVisible}
         onClose={() => setIsLoginModalVisible(false)}
         onSubmit={handleUserLogged}
+        onSignUp={() => setIsSignUpModalVisible(true)}
+      />
+      <SignUpModal
+        visible={isSignUpModalVisible}
+        onClose={() => setIsSignUpModalVisible(false)}
+        onSubmit={handleUserLogged}
       />
       <Container>
         <Header
           user={user}
-          onCancelOrder={handleCleanOrder}
+          onLogout={handleLogout}
           onLoginClick={() => setIsLoginModalVisible(true)}
         />
 
@@ -207,7 +222,7 @@ export function Main() {
               cartItems={cartItems}
               onAdd={addToCart}
               onDecrement={handleDecrementItem}
-              onConfirmOrder={handleCleanOrder}
+              onConfirmOrder={() => setCartItems([])}
               user={user}
             ></Cart>
           )}
